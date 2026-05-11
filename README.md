@@ -40,3 +40,16 @@
 
 **git commit -m "Day 2: initial project setup"**
 
+
+## Day 3: CLI Assistant
+ 
+Create a `.env` file in the project root:
+ 
+OPENAI_API_KEY=your_key_here
+ 
+Install dependencies:
+pip install -r requirements.txt
+ 
+Run:
+python scripts/cli_assistant.py
+
