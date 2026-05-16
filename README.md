@@ -53,3 +53,13 @@ pip install -r requirements.txt
 Run:
 python scripts/cli_assistant.py
 
+
+## Day 6: Document-Aware Assistant (RAG)
+ 
+1) Add `.txt` documents to `data/docs/`
+2) Build the index:
+python scripts/rag_assistant.py --build-index
+ 
+3) Ask questions:
+python scripts/rag_assistant.py
+
