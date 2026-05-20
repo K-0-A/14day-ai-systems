@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Day 7 AI Web App</title>
+  <style>
+    body { font-family: system-ui, Arial; max-width: 860px; margin: 40px auto; padding: 0 16px; }
+    textarea { width: 100%; height: 120px; padding: 10px; font-size: 14px; }
+    button { padding: 10px 14px; font-size: 14px; cursor: pointer; }
+    .row { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+    .status { margin-top: 12px; font-size: 14px; }
+    pre { background: #f6f6f6; padding: 12px; white-space: pre-wrap; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>AI Web App (Local)</h1>
+  <p>Enter text below and send it to your AI backend.</p>
+ 
+  <textarea id="prompt" placeholder="Type your question or instruction..."></textarea>
+ 
+  <div class="row">
+    <button id="send">Send</button>
+    <button id="clear">Clear</button>
+  </div>
+ 
+  <div class="status" id="status"></div>
+  <h3>Answer</h3>
+  <pre id="output"></pre>
+ 
+  <script>
+    const promptEl = document.getElementById("prompt");
+    const statusEl = document.getElementById("status");
+    const outputEl = document.getElementById("output");
+ 
+    document.getElementById("send").addEventListener("click", async () => {
+      const prompt = promptEl.value.trim();
+      outputEl.textContent = "";
+      statusEl.textContent = "";
+ 
+      if (!prompt) {
+        statusEl.textContent = "Please enter a prompt.";
+        return;
+      }
+ 
+      statusEl.textContent = "Calling backend...";
+ 
+      try {
+        const res = await fetch("/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+ 
+        const data = await res.json();
+        if (!data.ok) {
+          statusEl.textContent = "Error: " + (data.error || "Unknown error");
+          return;
+        }
+ 
+        statusEl.textContent = "Done.";
+        outputEl.textContent = data.answer;
+      } catch (err) {
+        statusEl.textContent = "Request failed: " + err;
+      }
+    });
+ 
+    document.getElementById("clear").addEventListener("click", () => {
+      promptEl.value = "";
+      outputEl.textContent = "";
+      statusEl.textContent = "";
+      promptEl.focus();
+    });
+  </script>
+</body>
+</html>

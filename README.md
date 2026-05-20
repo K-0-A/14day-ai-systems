@@ -63,3 +63,12 @@ python scripts/rag_assistant.py --build-index
 3) Ask questions:
 python scripts/rag_assistant.py
 
+
+## Day 7: AI Web App (Local)
+ 
+Run backend:
+uvicorn src.app:app --reload --port 8000
+ 
+Open:
+http://127.0.0.1:8000/
+
