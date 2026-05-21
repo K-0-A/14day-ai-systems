@@ -72,3 +72,16 @@ uvicorn src.app:app --reload --port 8000
 Open:
 http://127.0.0.1:8000/
 
+## Day 8: Conversational Memory + Sessions
+ 
+Run:
+uvicorn src.app:app --reload --port 8000
+ 
+Open:
+http://127.0.0.1:8000/
+ 
+Notes:
+- Browser stores session_id in localStorage
+- Backend persists sessions to data/sessions.json
+
+

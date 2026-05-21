@@ -29,10 +29,24 @@
   <pre id="output"></pre>
  
   <script>
+    // --- Step 1: Session Management ---
+    function getSessionId() {
+      const key = "day8_session_id";
+      let id = localStorage.getItem(key);
+      if (!id) {
+        // Simple client-generated session id
+        id = "sess_" + crypto.randomUUID();
+        localStorage.setItem(key, id);
+      }
+      return id;
+    }
+
+    // --- DOM Elements ---
     const promptEl = document.getElementById("prompt");
     const statusEl = document.getElementById("status");
     const outputEl = document.getElementById("output");
  
+    // --- Interaction Logic ---
     document.getElementById("send").addEventListener("click", async () => {
       const prompt = promptEl.value.trim();
       outputEl.textContent = "";
@@ -46,10 +60,14 @@
       statusEl.textContent = "Calling backend...";
  
       try {
-        const res = await fetch("/api/ask", {
+        // Get the stable session ID from local storage
+        const session_id = getSessionId();
+
+        // --- Step 2: Updated Endpoint and Payload ---
+        const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ session_id, prompt })
         });
  
         const data = await res.json();
