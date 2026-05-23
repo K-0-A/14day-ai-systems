@@ -85,3 +85,13 @@ Notes:
 - Backend persists sessions to data/sessions.json
 
 
+## Day 9: Task-Executing AI Agent
+ 
+Run:
+python scripts/agent_cli.py
+ 
+Tools:
+- search_docs (local search over data/docs)
+- read_file / write_file (workspace only)
+- calculator
+
