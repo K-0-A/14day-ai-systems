@@ -1,0 +1,1 @@
+Summary of refund policy found in notes.txt: [insert summary here]

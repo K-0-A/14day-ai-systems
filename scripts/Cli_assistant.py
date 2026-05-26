@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
  
-from openai import OpenAI
+from groq import Groq
  
 def build_messages(user_text: str) -> list[dict]:
     return [
@@ -16,11 +16,11 @@ def build_messages(user_text: str) -> list[dict]:
         {"role": "user", "content": user_text},
     ]
  
-def call_llm(client: OpenAI, user_text: str) -> str:
+def call_llm(client: Groq, user_text: str) -> str:
     messages = build_messages(user_text)
  
     resp = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="llama-3.3-70b-versatile",
         messages=messages,
         temperature=0.2,
         max_tokens=300,
@@ -31,11 +31,11 @@ def call_llm(client: OpenAI, user_text: str) -> str:
 def main():
     load_dotenv()
  
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        raise SystemExit("Missing OPENAI_API_KEY. Put it in a .env file.")
+        raise SystemExit("Missing GROQ_API_KEY. Put it in a .env file.")
  
-    client = OpenAI(api_key=api_key)
+    client = Groq(api_key=api_key)
  
     print("CLI AI Assistant (type 'exit' to quit)")
     while True:

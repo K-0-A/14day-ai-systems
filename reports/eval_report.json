@@ -1,0 +1,69 @@
+{
+  "total": 10,
+  "passed": 5,
+  "failed": 5,
+  "results": [
+    {
+      "id": "tc_001_normal",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "id": "tc_002_high_urgency",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "id": "tc_003_missing_requester",
+      "pass": false,
+      "errors": [
+        "summary must be a string."
+      ]
+    },
+    {
+      "id": "tc_004_ambiguous",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "id": "tc_005_long_text",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "id": "tc_006_injection_attempt",
+      "pass": false,
+      "errors": [
+        "Invalid JSON: Expecting value: line 1 column 1 (char 0)"
+      ]
+    },
+    {
+      "id": "tc_007_weird_formatting",
+      "pass": false,
+      "errors": [
+        "summary must be a string."
+      ]
+    },
+    {
+      "id": "tc_008_non_english",
+      "pass": false,
+      "errors": [
+        "summary must be a string.",
+        "action_items[0] is empty."
+      ]
+    },
+    {
+      "id": "tc_009_emptyish",
+      "pass": false,
+      "errors": [
+        "Missing urgency.",
+        "summary must be a string."
+      ]
+    },
+    {
+      "id": "tc_010_hostile",
+      "pass": true,
+      "errors": []
+    }
+  ]
+}

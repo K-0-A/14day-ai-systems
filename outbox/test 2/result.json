@@ -1,0 +1,13 @@
+{
+  "input_file": "inbox\\test 2.txt",
+  "extracted": {
+    "topic": "test 2",
+    "requester": null,
+    "urgency": "low",
+    "summary": "YEAH",
+    "action_items": []
+  },
+  "route": "low",
+  "sla": "72 hours",
+  "draft_reply": "Based on the provided information, I will draft a response. However, I notice that the \"requester\" field is null. Can you please provide the name or identifier of the requester so I can address them properly in the response?"
+}
