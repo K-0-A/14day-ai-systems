@@ -1,1 +1,0 @@
-Summary of refund policy based on search results.
