@@ -54,42 +54,76 @@ ARCHITECTURE OVERVIEW
 The codebase separates runnable scripts (scripts/) from reusable core logic (src/),
 keeping the system testable and scalable.
 
-.
 ├── requirements.txt
+
 ├── .env                         # API keys (never committed)
+
 ├── .gitignore
+
 ├── README.txt
+
 ├── data/
+
 │   └── docs/                    # Put your transcripts, notes, PDFs here
+
 │   └── sessions.json
+
 ├── inbox/                       # Hot folder for file ingestion
+
 ├── logs/
+
 │   └── workflow.log
+
 ├── outbox/                      # Structured output from pipelines
+
 ├── reports/
+
 │   └── eval_report.json         # Test results
+
 ├── scripts/
+
 │   ├── agent_cli.py             # Autonomous agent terminal
+
 │   ├── cli_assistant.py         # Basic CLI chat (text-in/text-out)
+
 │   ├── eval_run.py              # Automated evaluation test engine
+
 │   ├── hello_ai.py              # Setup verification
+
 │   ├── json_assistant.py        # Structured JSON schema testing
+
 │   ├── rag_assistant.py         # Build & query local RAG
+
 │   └── watch_inbox.py           # Filesystem polling loop
+
 ├── src/
+
 │   ├── agent_core.py            # Tool registry + agent loop
+
 │   ├── ai_service.py            # Model wrappers + sliding memory
+
 │   ├── app.py                   # FastAPI backend
+
 │   ├── eval/                    # Evaluation and safety validators
+
 │   │   └── validators.py        # JSON schema, constraints, blocklist
+
 │   ├── session_store.py         # Memory + disk persistence
+
 │   ├── tools.py                 # File, calculator, search, PDF tools
+
 │   ├── workflow_runner.py       # Orchestrator
+
 │   └── workflow_steps.py        # Extraction, validation, routing
+
 ├── tests/
+
 │   └── test_cases.json          # Benchmark + adversarial inputs
+
 ├── web/
+
 │   └── index.html               # Session-aware UI (localStorage)
+
 └── workspace/                   # Agent sandbox (read/write)
 
 
@@ -140,6 +174,7 @@ The agent supports multiple providers. When you run it, you pick an engine:
   3) Gemini 1.5 Flash (Google)- Fast / Efficient
   4) Claude 4.6 Sonnet (Anthropic) - Latest SOTA (2026)
   5) GPT-4o-Mini (OpenAI)    - Standard
+
   =============================================
 
 Example session (Claude 4.6):
@@ -202,44 +237,66 @@ fields from free-text inputs.
 
 --- EVENT-DRIVEN WORKFLOW AUTOMATION ---
 
-A non-blocking filesystem watcher (watch_inbox.py) polls inbox/ for .txt files,
-runs a multi-step pipeline, and moves processed files to inbox/processed/.
+A local multi-step automation background worker that operates via transactional
+folder polling ("Drop a .txt file → get an AI-processed response report").
 
-Example input (inbox/escalation.txt):
+Workflow Execution Triggers & Core Steps:
 
-  Subject: Urgent customer escalation about billing errors. Please summarize and
-  create next steps.
+  Monitor: scripts/watch_inbox.py polls inbox/ non-stop every 3 seconds for new
+           target files.
 
-Pipeline steps (from workflow_steps.py):
+  Ingest & Clean: Loads data frames and transactionally isolates raw markdown
+                  formatting code block anomalies.
 
-  1. Load raw text – read file content.
-  2. Extract structured fields – step2_extract_structured() calls the LLM to
-     pull out topic, requester, urgency, summary, and action_items. Includes
-     defensive cleaning (strip markdown, repair malformed JSON).
-  3. Classify urgency → route (priority/standard/low) + SLA (4h/24h/72h).
-  4. Generate draft reply – writes a professional response using only the
-     extracted fields.
-  5. Save outputs – writes result.json and draft_reply.txt to outbox/.
-  6. Log execution – appends a timestamped record to logs/workflow.log.
+  Extract Schema (AI Step): Routes text through Groq's llama-3.3-70b-versatile
+                            engine to parse valid JSON data models.
 
-Generated output (outbox/escalation/result.json):
+  Classify & Route: Applies deterministic execution constraints based on
+                    identified ticket priority matrix fields.
+
+  Draft Synthesis (AI Step): Generates a concise, context-grounded response
+                             using the structured metadata object.
+
+  Persist & Telemetry: Saves outputs directly to the outbox/ tree and pushes
+                       runtime records to logs/workflow.log.
+
+Hands-On Setup Reference:
+
+  # 1. Boot up the hot-folder polling worker daemon
+  python -m scripts.watch_inbox
+
+Capability Sandbox Demonstration
+
+Input Data File (inbox/billing_escalation.txt):
+
+  Hi, I'm Alex. Please summarize the customer complaint trends from last week
+  and list 3 action items. Not urgent.
+
+Terminal Activity Pipeline Feed:
+
+  Watching inbox for new .txt files... (Ctrl+C to stop)
+  Processing: inbox/billing_escalation.txt
+  Result: True
+
+Compiled Output Payload (outbox/billing_escalation/result.json):
 
   {
-    "input_file": "inbox/escalation.txt",
+    "input_file": "inbox/billing_escalation.txt",
     "extracted": {
-      "topic": "Billing Errors",
-      "requester": "Customer Support",
-      "urgency": "high",
-      "summary": "Urgent escalation from customer regarding discrepancies in billing cycles.",
-      "action_items": ["Audit latest invoice records", "Draft adjustments validation payload"]
+      "topic": "Customer Complaint Trends",
+      "requester": "Alex",
+      "urgency": "low",
+      "summary": "Requesting a trend summary and 3 explicit tactical action steps from trailing billing cycles.",
+      "action_items": [
+        "Analyze historical recurring payment failures",
+        "Draft resolution workflow timeline summary",
+        "Compile dashboard telemetry metrics report"
+      ]
     },
-    "route": "priority",
-    "sla": "4 hours",
-    "draft_reply": "Hello, thank you for reaching out..."
+    "route": "low",
+    "sla": "72 hours",
+    "draft_reply": "Hello Alex, thank you for reaching out. We have logged your request regarding complaint trends under our standard 72-hour SLA window..."
   }
-
-The extraction step includes defensive markdown stripping and a try/except fallback,
-so malformed LLM output never crashes the automation loop.
 
 
 --- LOCAL RAG ON EARNINGS TRANSCRIPTS ---
@@ -344,3 +401,9 @@ Environment variables you need to set in the Render dashboard (or locally in a `
 The start command (Render uses `$PORT` automatically):
 
   uvicorn src.app:app --host 0.0.0.0 --port $PORT
+
+
+FINAL NOTE
+----------
+
+This is a personal portfolio project, not a production‑ready framework.
